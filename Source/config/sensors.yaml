@@ -1,0 +1,24 @@
+# Sample sensor configuration
+# Loaded by the sensor simulator (client/) at startup.
+# TODO: complete the schema and add at least three sensors.
+
+server:
+  host: 127.0.0.1
+  port: 9000  # TCP ingest port
+
+sensors:
+  - id: temperature_sensor_1
+    type: temperature
+    interval_seconds: 5
+    range: [20, 30]  # plausible range
+
+  - id: humidity_sensor_1
+    type: humidity
+    interval_seconds: 10
+    range: [40, 80]
+
+  - id: soil_moisture_sensor_1
+    type: soil_moisture
+    interval_seconds: 15
+    range: [10, 50]
+    interval_seconds: # TODO
