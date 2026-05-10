@@ -58,5 +58,5 @@ Connect to `ws://<host>:<port>/live`. Send a JSON subscription message after the
 
 ## Authors
 
-- TODO: Name 1, Student ID
-- TODO: Name 2, Student ID
+- TODO: Hope kutengule, Bsc-com-ne-04-22
+- TODO: Mariam Haji, Bsc-com-ne-28-23
