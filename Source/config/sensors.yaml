@@ -21,4 +21,8 @@ sensors:
     type: soil_moisture
     interval_seconds: 15
     range: [10, 50]
-    interval_seconds: # TODO
+
+  - id: light_sensor_1
+    type: light
+    interval_seconds: 20
+    range: [0, 1000] 

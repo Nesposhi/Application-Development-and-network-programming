@@ -1,892 +1,504 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sensor Dashboard | Neo Brutalism</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Greenhouse  Sensor Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-:root {
-  --yellow: #FFE500;
-  --pink:
-#FF6B9D;
-  --cyan: #00D4FF;
-  --green: #4ADE80;
-  --black: #000000;
-  --white: #FFFFFF;
-  --gray: #F5F5F5;
-  --dark-gray: #333333;
-  --border: 3px solid #000000;
-  --shadow: 5px 5px 0px #000000;
-  --shadow-sm: 3px 3px 0px #000000;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: var(--gray);
-  color: var(--black);
-  line-height: 1.5;
-}
-
-.dashboard {
-  display: flex;
-  min-height: 100vh;
-}
-
-.sidebar {
-  width: 260px;
-  background: var(--black);
-  color: var(--white);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  border-right: var(--border);
-}
-
-.sidebar-logo {
-  padding: 24px;
-  border-bottom: 2px solid var(--dark-gray);
-}
-
-.logo-text {
-  font-size: 1.5rem;
-  font-weight: 900;
-  letter-spacing: -1px;
-}
-
-.logo-dot {
-  color: var(--yellow);
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 0;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 24px;
-  color: var(--white);
-  text-decoration: none;
-  font-weight: 600;
-  border-bottom: 1px solid var(--dark-gray);
-  transition: all 0.15s ease;
-}
-
-.nav-item:hover {
-  background: var(--yellow);
-  color: var(--black);
-}
-
-.nav-item.active {
-  background: var(--yellow);
-  color: var(--black);
-}
-
-.sidebar-footer {
-  padding: 20px;
-  border-top: 2px solid var(--dark-gray);
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.user-avatar {
-  width: 44px;
-  height: 44px;
-  background: var(--yellow);
-  color: var(--black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  border: 2px solid var(--white);
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.user-name {
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.user-role {
-  font-size: 0.8rem;
-  opacity: 0.7;
-}
-
-.main-content {
-  flex: 1;
-  margin-left: 260px;
-  padding: 24px;
-}
-
-.dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  padding: 20px 24px;
-  background: var(--white);
-  border: var(--border);
-  box-shadow: var(--shadow);
-}
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 900;
-}
-
-.page-subtitle {
-  color: var(--dark-gray);
-  font-size: 0.9rem;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  background: var(--white);
-  border: var(--border);
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  font-size: 0.95rem;
-  width: 200px;
-  font-family: inherit;
-}
-
-.notification-btn {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  background: var(--white);
-  border: var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.notification-btn:hover {
-  background: var(--yellow);
-}
-
-.notification-badge {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: var(--pink);
-  color: var(--white);
-  font-size: 0.7rem;
-  font-weight: 700;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--black);
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: var(--white);
-  border: var(--border);
-  box-shadow: var(--shadow);
-  padding: 24px;
-  display: flex;
-  gap: 16px;
-  transition: all 0.15s ease;
-}
-
-.stat-card:hover {
-  transform: translate(-3px, -3px);
-  box-shadow: 8px 8px 0px var(--black);
-}
-
-.stat-card.yellow .stat-icon {
-  background: var(--yellow);
-}
-
-.stat-card.pink .stat-icon {
-  background: var(--pink);
-  color: var(--white);
-}
-
-.stat-card.cyan .stat-icon {
-  background: var(--cyan);
-}
-
-.stat-card.green .stat-icon {
-  background: var(--green);
-}
-
-.stat-icon {
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: var(--border);
-  flex-shrink: 0;
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-label {
-  font-size: 0.85rem;
-  color: var(--dark-gray);
-  font-weight: 500;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 900;
-  line-height: 1.2;
-}
-
-.stat-change {
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.stat-change.positive {
-  color: #16a34a;
-}
-
-.stat-change.negative {
-  color: #dc2626;
-}
-
-.content-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 20px;
-}
-
-.card {
-  background: var(--white);
-  border: var(--border);
-  box-shadow: var(--shadow);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: var(--border);
-  background: var(--black);
-  color: var(--white);
-}
-
-.card-header h2 {
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-
-.view-all {
-  color: var(--yellow);
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-
-.view-all:hover {
-  text-decoration: underline;
-}
-
-.transactions-card {
-  grid-row: span 2;
-}
-
-.transactions-list {
-  padding: 0;
-}
-
-.transaction-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 2px solid var(--gray);
-  transition: background 0.15s ease;
-}
-
-.transaction-item:last-child {
-  border-bottom: none;
-}
-
-.transaction-item:hover {
-  background: var(--gray);
-}
-
-.transaction-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.transaction-name {
-  font-weight: 700;
-}
-
-.transaction-date {
-  font-size: 0.85rem;
-  color: var(--dark-gray);
-}
-
-.transaction-amount {
-  font-weight: 800;
-  font-size: 1.1rem;
-}
-
-.transaction-amount.positive {
-  color: #16a34a;
-}
-
-.transaction-amount.negative {
-  color: #dc2626;
-}
-
-.quick-actions {
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 16px;
-  border: var(--border);
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-family: inherit;
-  box-shadow: var(--shadow-sm);
-}
-
-    .action-btn:hover,
-    .btn-brutalist:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0px #000;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .btn-brutalist {
-      transition: all 0.15s ease;
-}
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+      padding: 20px;
+    }
 
-.action-btn.cyan {
-  background: var(--cyan);
-  color: var(--black);
-}
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+    }
 
-.action-btn.dark {
-  background: var(--black);
-  color: var(--white);
-}
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 2.5em;
+    }
 
-.progress-list {
-  padding: 20px 24px;
-}
+    .subtitle {
+      text-align: center;
+      color: #7f8c8d;
+      margin-bottom: 30px;
+      font-size: 0.95em;
+    }
 
-.progress-item {
-  margin-bottom: 20px;
-}
+    .status {
+      text-align: center;
+      margin: 20px 0;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
 
-.progress-item:last-child {
-  margin-bottom: 0;
-}
+    .status.connected {
+      background-color: #d4edda;
+      color: #155724;
+      border: 2px solid #28a745;
+    }
 
-.progress-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
+    .status.disconnected {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 2px solid #dc3545;
+    }
 
-.progress-label {
-  font-weight: 600;
-}
+    .controls {
+      text-align: center;
+      margin: 30px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
 
-.progress-value {
-  font-weight: 800;
-}
+    .controls label {
+      font-weight: 600;
+      color: #495057;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.progress-bar {
-  height: 24px;
-  background: var(--gray);
-  border: var(--border);
-}
+    select {
+      padding: 10px 12px;
+      border: 2px solid #ced4da;
+      border-radius: 6px;
+      background: white;
+      min-width: 200px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
 
-.progress-fill {
-  height: 100%;
-  transition: width 0.5s ease;
-}
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
 
-.progress-fill.yellow {
-  background: var(--yellow);
-}
+    button {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 14px;
+    }
 
-.progress-fill.pink {
-  background: var(--pink);
-}
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
 
-.progress-fill.green {
-  background: var(--green);
-}
+    button:active {
+      transform: translateY(0);
+    }
 
-@media (max-width: 1200px) {
-.stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .sensor-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
 
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
+    .sensor-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
 
-  .transactions-card {
-    grid-row: span 1;
-  }
-}
+    .sensor-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
 
-@media (max-width: 900px) {
-  .sidebar {
-    transform: translateX(-100%);
-    z-index: 100;
-  }
+    .sensor-card.active {
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      border: 2px solid white;
+    }
 
-  .main-content {
-    margin-left: 0;
-  }
+    .sensor-id {
+      font-weight: 700;
+      font-size: 1.1em;
+      margin-bottom: 5px;
+    }
 
-.dashboard-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-  }
+    .sensor-type {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
 
-  .search-box input {
-    width: 150px;
-  }
-}
+    .sensor-value {
+      font-size: 1.8em;
+      margin-top: 10px;
+      font-weight: 600;
+    }
 
-@media (max-width: 640px) {
-  .main-content {
-    padding: 16px;
-  }
+    .chart-container {
+      width: 100%;
+      margin: 30px 0;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9ecef;
+    }
 
-.stats-grid {
-    grid-template-columns: 1fr;
-  }
+    .chart-wrapper {
+      position: relative;
+      height: 400px;
+      width: 100%;
+    }
 
-  .stat-card {
-    padding: 20px;
-  }
+    .info {
+      text-align: center;
+      margin-top: 30px;
+      color: #7f8c8d;
+      font-size: 14px;
+      border-top: 1px solid #e9ecef;
+      padding-top: 20px;
+    }
 
-  .stat-value {
-    font-size: 1.75rem;
-  }
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
 
-  .quick-actions {
-    grid-template-columns: 1fr;
-  }
+      h1 {
+        font-size: 1.8em;
+      }
 
-  .header-right {
-    width: 100%;
-    justify-content: space-between;
-  }
+      .sensor-list {
+        grid-template-columns: 1fr;
+      }
 
-  .search-box {
-    flex: 1;
-  }
+      .controls {
+        flex-direction: column;
+      }
 
-  .search-box input {
-    width: 100%;
-  }
-}
+      select {
+        width: 100%;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="dashboard">
-    <aside class="sidebar">
-      <div class="sidebar-logo">
-        <span class="logo-text">SENSOR<span class="logo-dot">.</span></span>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="#" class="nav-item active">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-          <span>Dashboard</span>
-        </a>
-        <a href="#" class="nav-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-          <span>Analytics</span>
-        </a>
-        <a href="#" class="nav-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span>Settings</span>
-        </a>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="user-profile">
-          <div class="user-avatar">SD</div>
-          <div class="user-info">
-            <span class="user-name">Sensor Dashboard</span>
-            <span class="user-role">Monitor</span>
-          </div>
-        </div>
-      </div>
-    </aside>
+  <div class="container">
+    <h1> Greenhouse Sensor Dashboard</h1>
+    <p class="subtitle">Real-time monitoring system for remote farms</p>
 
-    <main class="main-content">
-      <header class="dashboard-header">
-        <div class="header-left">
-          <h1 class="page-title">Sensor Dashboard</h1>
-          <span class="page-subtitle">Real-time monitoring system</span>
-        </div>
-        <div class="header-right">
-          <div class="search-box">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" placeholder="Search sensors...">
-          </div>
-          <div class="status" id="status">🔄 Connecting...</div>
-        </div>
-      </header>
+    <div class="status" id="status"> Connecting...</div>
 
-      <div class="controls">
-        <label for="sensor-select">📡 Monitor Sensors:</label>
-        <select id="sensor-select" multiple>
-          <option value="">🌍 All Sensors</option>
+    <div class="controls">
+      <label>
+        Select Sensor:
+        <select id="sensorSelect">
+          <option value="">All Sensors</option>
         </select>
-        <button onclick="updateSubscription()">🔄 Update</button>
+      </label>
+      <button onclick="clearChart()">Clear Chart</button>
+      <button onclick="loadHistoricalData()">Load History</button>
+    </div>
+
+    <div class="sensor-list" id="sensorList"></div>
+
+    <div class="chart-container">
+      <div class="chart-wrapper">
+        <canvas id="sensorChart"></canvas>
       </div>
+    </div>
 
-      <section class="stats-grid" id="stats-section">
-        <div class="loading">Loading sensor stats...</div>
-      </section>
-
-      <section class="content-grid">
-        <div class="card">
-          <div class="card-header">
-            <h2>Active Sensors</h2>
-          </div>
-          <div class="sensor-grid" id="sensor-grid">
-            <div class="loading">Loading sensors...</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <h2>Quick Actions</h2>
-          </div>
-          <div class="quick-actions">
-            <button class="action-btn btn-brutalist yellow" onclick="connect()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5h6v6"/><path d="m21 12-3-3H6l-3 3v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Z"/></svg>
-              Connect
-            </button>
-            <button class="action-btn btn-brutalist pink" onclick="loadSensors()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-              Refresh
-            </button>
-            <button class="action-btn btn-brutalist cyan" onclick="clearData()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-              Clear Data
-            </button>
-          </div>
-        </div>
-      </section>
-    </main>
+    <div class="info">
+      <p>📊 <strong>Dashboard Status:</strong> Live monitoring active</p>
+      <p>Last updated: <span id="lastUpdate">--:--:--</span></p>
+    </div>
   </div>
 
   <script>
-    const statusDiv = document.getElementById('status');
-    const statsSection = document.getElementById('stats-section');
-    const sensorGrid = document.getElementById('sensor-grid');
-    const sensorSelect = document.getElementById('sensor-select');
+    const WS_URL = 'ws://127.0.0.1:8081/live';
+    let ws = null;
+    let chart = null;
+    let readings = {};
+    let selectedSensor = '';
+    const MAX_POINTS = 100;
 
-    let ws;
-    let sensorData = {};
-    let subscribedSensors = new Set();
-
-    // Sensor type configurations
-    const sensorConfig = {
-      temperature: { unit: '°C', icon: '🌡️', color: 'yellow' },
-      humidity: { unit: '%', icon: '💧', color: 'pink' },
-      soil_moisture: { unit: '%', icon: '🌱', color: 'cyan' },
-      pressure: { unit: 'hPa', icon: '📊', color: 'green' },
-      light: { unit: 'lux', icon: '☀️', color: 'yellow' }
+    // Initialize chart
+    const ctx = document.getElementById('sensorChart').getContext('2d');
+    const chartConfig = {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: []
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Sensor Readings Over Time'
+          },
+          legend: {
+            position: 'top'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false
+          }
+        }
+      }
     };
+    chart = new Chart(ctx, chartConfig);
 
-    // Connect to WebSocket
-    function connect() {
-      ws = new WebSocket('ws://127.0.0.1:8080/live');
+    // Color palette for different sensors
+    const colors = [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
+      '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'
+    ];
 
-      ws.onopen = function() {
-        statusDiv.textContent = '✅ Connected';
-        statusDiv.className = 'status connected';
+    function getColor(index) {
+      return colors[index % colors.length];
+    }
+
+    function connectWebSocket() {
+      ws = new WebSocket(WS_URL);
+
+      ws.onopen = () => {
+        updateStatus(true);
+        console.log('Connected to WebSocket');
+        // Request all sensors initially
+        ws.send(JSON.stringify({ action: 'subscribe', sensors: [] }));
       };
 
-      ws.onmessage = function(event) {
-        const reading = JSON.parse(event.data);
-        updateSensorData(reading);
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          addReading(data);
+          updateSensorList();
+          updateChart();
+          updateTimestamp();
+        } catch (e) {
+          console.error('Error parsing message:', e);
+        }
       };
 
-      ws.onclose = function() {
-        statusDiv.textContent = '❌ Disconnected - Reconnecting...';
-        statusDiv.className = 'status disconnected';
-        setTimeout(connect, 1000);
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        updateStatus(false);
       };
 
-      ws.onerror = function(error) {
-        statusDiv.textContent = '⚠️ Error: ' + error;
-        statusDiv.className = 'status disconnected';
+      ws.onclose = () => {
+        updateStatus(false);
+        console.log('WebSocket closed, reconnecting in 3s...');
+        setTimeout(connectWebSocket, 3000);
       };
     }
 
-    // Update sensor data and UI
-    function updateSensorData(reading) {
-      const sensorId = reading.sensor_id;
-      const value = reading.value;
-      const timestamp = new Date(reading.timestamp);
-
-      if (!sensorData[sensorId]) {
-        sensorData[sensorId] = { values: [], lastUpdate: timestamp };
-      }
-
-      sensorData[sensorId].values.push({ value, timestamp });
-      sensorData[sensorId].lastUpdate = timestamp;
-
-      // Keep only last 10 values for trend calculation
-      if (sensorData[sensorId].values.length > 10) {
-        sensorData[sensorId].values.shift();
-      }
-
-      updateSensorCard(sensorId);
-      updateStatsCards();
-    }
-
-    // Create or update sensor card
-    function updateSensorCard(sensorId) {
-      let card = document.getElementById(`sensor-${sensorId}`);
-      const data = sensorData[sensorId];
-      const latest = data.values[data.values.length - 1];
-
-      if (!card) {
-        card = createSensorCard(sensorId);
-        sensorGrid.appendChild(card);
-      }
-
-      const config = sensorConfig[data.type] || sensorConfig.temperature;
-      const trend = calculateTrend(data.values);
-      const trendClass = trend > 0 ? 'trend-up' : trend < 0 ? 'trend-down' : 'trend-stable';
-      const trendIcon = trend > 0 ? '📈' : trend < 0 ? '📉' : '➡️';
-
-      card.querySelector('.sensor-value').textContent = latest.value.toFixed(1);
-      card.querySelector('.sensor-unit').textContent = config.unit;
-      card.querySelector('.trend-icon').textContent = trendIcon;
-      card.querySelector('.trend-icon').className = `trend-icon ${trendClass}`;
-      card.querySelector('.last-update').textContent = `Updated: ${data.lastUpdate.toLocaleTimeString()}`;
-    }
-
-    // Create sensor card
-    function createSensorCard(sensorId) {
-      const data = sensorData[sensorId];
-      const config = sensorConfig[data.type] || sensorConfig.temperature;
-
-      const card = document.createElement('div');
-      card.className = 'sensor-item';
-      card.id = `sensor-${sensorId}`;
-
-      card.innerHTML = `
-        <div class="sensor-name">${config.icon} ${sensorId}</div>
-        <div class="sensor-value">0<span class="sensor-unit">${config.unit}</span></div>
-        <div class="sensor-trend">
-          <span class="trend-icon trend-stable">➡️</span>
-          <span>Stable</span>
-        </div>
-        <div class="last-update">Loading...</div>
-      `;
-
-      return card;
-    }
-
-    // Calculate trend (simple: compare first and last values)
-    function calculateTrend(values) {
-      if (values.length < 2) return 0;
-      const first = values[0].value;
-      const last = values[values.length - 1].value;
-      return last - first;
-    }
-
-    // Update stats cards
-    function updateStatsCards() {
-      const sensors = Object.keys(sensorData);
-      if (sensors.length === 0) return;
-
-      const totalSensors = sensors.length;
-      const activeSensors = sensors.filter(id => sensorData[id].values.length > 0).length;
-      const avgTemp = calculateAverage('temperature');
-      const avgHumidity = calculateAverage('humidity');
-
-      statsSection.innerHTML = `
-        <div class="stat-card yellow">
-          <div class="stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Total Sensors</span>
-            <span class="stat-value">${totalSensors}</span>
-            <span class="stat-change positive">Active</span>
-          </div>
-        </div>
-        <div class="stat-card pink">
-          <div class="stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Active Sensors</span>
-            <span class="stat-value">${activeSensors}</span>
-            <span class="stat-change positive">${((activeSensors/totalSensors)*100).toFixed(0)}%</span>
-          </div>
-        </div>
-        <div class="stat-card cyan">
-          <div class="stat-icon">
-            🌡️
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Avg Temperature</span>
-            <span class="stat-value">${avgTemp !== null ? avgTemp.toFixed(1) + '°C' : 'N/A'}</span>
-            <span class="stat-change positive">Current</span>
-          </div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-icon">
-            💧
-          </div>
-          <div class="stat-content">
-            <span class="stat-label">Avg Humidity</span>
-            <span class="stat-value">${avgHumidity !== null ? avgHumidity.toFixed(1) + '%' : 'N/A'}</span>
-            <span class="stat-change positive">Current</span>
-          </div>
-        </div>
-      `;
-    }
-
-    // Calculate average for sensor type
-    function calculateAverage(sensorType) {
-      const sensorsOfType = Object.keys(sensorData).filter(id =>
-        sensorData[id].type === sensorType && sensorData[id].values.length > 0
-      );
-
-      if (sensorsOfType.length === 0) return null;
-
-      const sum = sensorsOfType.reduce((acc, id) => {
-        const latest = sensorData[id].values[sensorData[id].values.length - 1];
-        return acc + latest.value;
-      }, 0);
-
-      return sum / sensorsOfType.length;
-    }
-
-    // Update subscription
-    function updateSubscription() {
-      const selected = Array.from(sensorSelect.selectedOptions).map(option => option.value).filter(v => v);
-      subscribedSensors = new Set(selected);
-
-      if (selected.length === 0) {
-        ws.send(JSON.stringify({ subscribe: [] }));
+    function updateStatus(connected) {
+      const statusEl = document.getElementById('status');
+      if (connected) {
+        statusEl.className = 'status connected';
+        statusEl.textContent = '✓ Connected to live feed';
       } else {
-        ws.send(JSON.stringify({ subscribe: selected }));
+        statusEl.className = 'status disconnected';
+        statusEl.textContent = '✗ Disconnected from live feed';
       }
     }
 
-    // Load available sensors
-    async function loadSensors() {
+    function addReading(reading) {
+      const id = reading.sensor_id;
+      if (!readings[id]) {
+        readings[id] = [];
+      }
+      readings[id].push({
+        timestamp: reading.timestamp,
+        value: reading.value,
+        type: reading.type || 'unknown'
+      });
+      // Keep only last MAX_POINTS
+      if (readings[id].length > MAX_POINTS) {
+        readings[id].shift();
+      }
+    }
+
+    function updateSensorList() {
+      const listEl = document.getElementById('sensorList');
+      const selectEl = document.getElementById('sensorSelect');
+
+      const currentOptions = Array.from(selectEl.options).map(o => o.value);
+
+      Object.keys(readings).forEach(id => {
+        if (!currentOptions.includes(id)) {
+          const option = document.createElement('option');
+          option.value = id;
+          option.textContent = id;
+          selectEl.appendChild(option);
+        }
+
+        // Create card if not exists
+        if (!document.getElementById('card-' + id)) {
+          const card = document.createElement('div');
+          card.className = 'sensor-card';
+          card.id = 'card-' + id;
+          card.innerHTML = `
+            <div class="sensor-id">${id}</div>
+            <div class="sensor-type">${readings[id][readings[id].length - 1].type}</div>
+            <div class="sensor-value">${readings[id][readings[id].length - 1].value.toFixed(2)}</div>
+          `;
+          card.onclick = () => selectSensor(id);
+          listEl.appendChild(card);
+        }
+      });
+
+      // Update card values
+      Object.keys(readings).forEach(id => {
+        const card = document.getElementById('card-' + id);
+        if (card && readings[id].length > 0) {
+          const lastReading = readings[id][readings[id].length - 1];
+          card.querySelector('.sensor-value').textContent = lastReading.value.toFixed(2);
+        }
+      });
+    }
+
+    function selectSensor(sensorId) {
+      selectedSensor = sensorId;
+      document.getElementById('sensorSelect').value = sensorId;
+      document.querySelectorAll('.sensor-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      document.getElementById('card-' + sensorId).classList.add('active');
+      updateChart();
+    }
+
+    function updateChart() {
+      const datasets = [];
+      let maxLabel = 0;
+
+      if (selectedSensor && readings[selectedSensor]) {
+        // Single sensor mode
+        const data = readings[selectedSensor];
+        datasets.push({
+          label: selectedSensor,
+          data: data.map(r => r.value),
+          borderColor: getColor(0),
+          backgroundColor: getColor(0) + '20',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true
+        });
+        maxLabel = data.length;
+      } else {
+        // All sensors mode
+        Object.keys(readings).forEach((id, idx) => {
+          const data = readings[id];
+          datasets.push({
+            label: id,
+            data: data.map(r => r.value),
+            borderColor: getColor(idx),
+            backgroundColor: getColor(idx) + '20',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: false
+          });
+          maxLabel = Math.max(maxLabel, data.length);
+        });
+      }
+
+      chart.data.datasets = datasets;
+      chart.data.labels = Array.from({ length: maxLabel }, (_, i) => '');
+      chart.update();
+    }
+
+    function updateTimestamp() {
+      const now = new Date();
+      document.getElementById('lastUpdate').textContent = now.toLocaleTimeString();
+    }
+
+    function clearChart() {
+      readings = {};
+      chart.data.datasets = [];
+      chart.data.labels = [];
+      chart.update();
+      document.getElementById('sensorList').innerHTML = '';
+    }
+
+    async function loadHistoricalData() {
       try {
-        const response = await fetch('http://127.0.0.1:8080/sensors');
+        const response = await fetch('/sensors');
         const sensors = await response.json();
 
-        // Initialize sensor data
-        sensors.forEach(sensor => {
-          sensorData[sensor.id] = {
-            type: sensor.type,
-            values: [],
-            lastUpdate: new Date()
-          };
-        });
+        for (const sensor of sensors) {
+          const url = `/sensors/${sensor.id}/readings?from=0`;
+          const resp = await fetch(url);
+          const histReadings = await resp.json();
+          readings[sensor.id] = histReadings.map(r => ({
+            timestamp: r.timestamp,
+            value: r.value,
+            type: r.type || sensor.type
+          }));
+        }
 
-        // Update selector
-        sensorSelect.innerHTML = '<option value="">🌍 All Sensors</option>';
-        sensors.forEach(sensor => {
-          const option = document.createElement('option');
-          option.value = sensor.id;
-          option.textContent = `${sensorConfig[sensor.type]?.icon || '📊'} ${sensor.id}`;
-          sensorSelect.appendChild(option);
-        });
-
-        // Create initial cards
-        sensorGrid.innerHTML = '';
-        sensors.forEach(sensor => {
-          const card = createSensorCard(sensor.id);
-          sensorGrid.appendChild(card);
-        });
-
-        updateStatsCards();
-
-      } catch (error) {
-        console.error('Failed to load sensors:', error);
-        sensorGrid.innerHTML = '<div class="loading">Failed to load sensors</div>';
+        updateSensorList();
+        updateChart();
+        updateTimestamp();
+      } catch (e) {
+        console.error('Error loading historical data:', e);
+        alert('Failed to load historical data');
       }
     }
 
-    // Clear all data
-    function clearData() {
-      sensorData = {};
-      sensorGrid.innerHTML = '<div class="loading">Data cleared</div>';
-      updateStatsCards();
-    }
+    document.getElementById('sensorSelect').addEventListener('change', (e) => {
+      selectedSensor = e.target.value;
+      updateChart();
+      if (selectedSensor) {
+        const cards = document.querySelectorAll('.sensor-card');
+        cards.forEach(card => card.classList.remove('active'));
+        document.getElementById('card-' + selectedSensor).classList.add('active');
+      }
+    });
 
-    // Initialize
-    connect();
-    loadSensors();
+    // Start connection
+    connectWebSocket();
+    loadHistoricalData();
   </script>
 </body>
+
 </html>

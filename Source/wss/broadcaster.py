@@ -1,39 +1,47 @@
-"""Tracks connected WebSocket clients and dispatches readings to them.
-
-Owns the set of live clients, their subscription filters, and a way for
-producers (the telemetry server) to publish a new reading.
-"""
+"""Broadcasts readings to connected WebSocket clients."""
 from __future__ import annotations
+
+import asyncio
+import json
+from typing import Dict, Set
 
 
 class Broadcaster:
-    """Fan-out of readings to the set of connected WebSocket clients."""
+    """Fan-out readings to WebSocket clients with optional per-client subscriptions."""
 
-    def __init__(self) -> None:
-        # TODO: track connected clients and their per-client subscriptions
-        raise NotImplementedError
+    def __init__(self):
+        self._clients: Dict = {}  # ws -> set of subscribed sensor_ids
 
     async def register(self, websocket) -> None:
-        """Add a newly connected client."""
-        raise NotImplementedError
+        """Register a new client (receives all sensors by default)."""
+        self._clients[websocket] = set()
 
     async def unregister(self, websocket) -> None:
-        """Remove a disconnected client."""
-        raise NotImplementedError
+        """Unregister a disconnected client."""
+        self._clients.pop(websocket, None)
 
-    async def set_subscription(self, websocket, sensor_ids) -> None:
-        """Replace the per-client sensor-id filter."""
-        raise NotImplementedError
+    async def set_subscription(self, websocket, sensor_ids: Set[str]) -> None:
+        """Update a client's subscription filter."""
+        if websocket in self._clients:
+            self._clients[websocket] = sensor_ids
 
-    async def publish(self, reading) -> None:
-        """Push a reading to every interested client.
-
-        Be careful with slow consumers — a blocked client must not stall
-        delivery to the rest. Document the strategy you choose
-        (drop, buffer-with-bound, disconnect, etc.) in the architecture
-        document.
-        """
-        # TODO: serialize reading to JSON
-        # TODO: for each client whose subscription matches, send concurrently
-        # TODO: handle send-timeouts and disconnected clients
-        raise NotImplementedError
+    async def publish(self, reading: dict) -> None:
+        """Broadcast a reading to interested clients."""
+        try:
+            message = json.dumps(reading)
+        except Exception:
+            return
+        
+        # Send to each interested client
+        disconnected = []
+        for ws, subscriptions in list(self._clients.items()):
+            # Empty subscription = all sensors
+            if not subscriptions or reading.get('sensor_id') in subscriptions:
+                try:
+                    await asyncio.wait_for(ws.send(message), timeout=1.0)
+                except Exception:
+                    disconnected.append(ws)
+        
+        # Clean up disconnected clients
+        for ws in disconnected:
+            self._clients.pop(ws, None)

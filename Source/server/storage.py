@@ -1,27 +1,20 @@
-"""Storage layer for sensors and readings.
-
-The backing store is SQLite for persistence across server restarts.
-Tables:
-- sensors: id (text primary key), type (text)
-- readings: sensor_id (text), timestamp (integer), value (real)
-"""
+"""Simple SQLite storage for sensors and readings."""
 from __future__ import annotations
 
-import asyncio
 import sqlite3
 from typing import Iterable, Optional
 
 
 class Storage:
-    """SQLite-based storage interface."""
+    """SQLite-based storage for sensor readings."""
 
     def __init__(self, db_path: str = ":memory:"):
         self.db_path = db_path
-        self._conn = None
-
-    async def init(self):
-        """Initialize the database."""
         self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
+        self._init_db()
+
+    def _init_db(self):
+        """Initialize the database tables."""
         self._conn.execute("""
             CREATE TABLE IF NOT EXISTS sensors (
                 id TEXT PRIMARY KEY,
@@ -30,18 +23,24 @@ class Storage:
         """)
         self._conn.execute("""
             CREATE TABLE IF NOT EXISTS readings (
-                sensor_id TEXT NOT NULL,
-                timestamp INTEGER NOT NULL,
-                value REAL NOT NULL,
-                FOREIGN KEY (sensor_id) REFERENCES sensors (id)
+                sensor_id TEXT,
+                timestamp INTEGER,
+                value REAL,
+                type TEXT
             )
         """)
         self._conn.commit()
 
+    async def init(self):
+        """Async initialization hook (no-op)."""
+        pass
+
     async def add_sensor(self, sensor: dict) -> None:
         """Register a new sensor."""
-        self._conn.execute("INSERT OR IGNORE INTO sensors (id, type) VALUES (?, ?)",
-                           (sensor['id'], sensor['type']))
+        self._conn.execute(
+            "INSERT OR IGNORE INTO sensors (id, type) VALUES (?, ?)",
+            (sensor['id'], sensor['type'])
+        )
         self._conn.commit()
 
     async def remove_sensor(self, sensor_id: str) -> None:
@@ -56,9 +55,23 @@ class Storage:
         return [{'id': row[0], 'type': row[1]} for row in cursor.fetchall()]
 
     async def add_reading(self, reading) -> None:
-        """Persist a single reading."""
-        self._conn.execute("INSERT INTO readings (sensor_id, timestamp, value) VALUES (?, ?, ?)",
-                           (reading.sensor_id, reading.timestamp, reading.value))
+        """Store a reading and auto-register the sensor."""
+        sensor_id = reading.sensor_id
+        value = reading.value
+        timestamp = reading.timestamp
+        sensor_type = getattr(reading, 'sensor_type', 'unknown')
+        
+        # Auto-register sensor if not present
+        self._conn.execute(
+            "INSERT OR IGNORE INTO sensors (id, type) VALUES (?, ?)",
+            (sensor_id, sensor_type)
+        )
+        
+        # Store reading
+        self._conn.execute(
+            "INSERT INTO readings (sensor_id, timestamp, value, type) VALUES (?, ?, ?, ?)",
+            (sensor_id, timestamp, value, sensor_type)
+        )
         self._conn.commit()
 
     async def get_readings(
@@ -67,15 +80,18 @@ class Storage:
         from_ts: Optional[float] = None,
         to_ts: Optional[float] = None,
     ) -> Iterable[dict]:
-        """Return readings for a sensor within an optional time window."""
-        query = "SELECT timestamp, value FROM readings WHERE sensor_id = ?"
+        """Fetch readings for a sensor within optional time window."""
+        query = "SELECT timestamp, value, type FROM readings WHERE sensor_id = ?"
         params = [sensor_id]
+        
         if from_ts is not None:
             query += " AND timestamp >= ?"
             params.append(int(from_ts))
         if to_ts is not None:
             query += " AND timestamp <= ?"
             params.append(int(to_ts))
+        
         query += " ORDER BY timestamp"
         cursor = self._conn.execute(query, params)
-        return [{'timestamp': row[0], 'value': row[1]} for row in cursor.fetchall()]
+        return [{'timestamp': row[0], 'value': row[1], 'type': row[2]} 
+                for row in cursor.fetchall()]

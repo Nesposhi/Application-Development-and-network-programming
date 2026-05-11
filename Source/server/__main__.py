@@ -5,8 +5,7 @@ Run with:
 
 The server starts:
 - TCP ingest server on 127.0.0.1:9000 for sensor connections
-- HTTP REST API on 127.0.0.1:8080 for queries
-- WebSocket live feed on ws://127.0.0.1:8080/live
+- HTTP REST API on 127.0.0.1:8080 for queries and dashboard
 
 Usage Examples:
     # Start the server
@@ -21,9 +20,8 @@ Usage Examples:
       -H "Content-Type: application/json" \
       -d '{"id": "new_sensor", "type": "pressure"}'
 
-    # WebSocket live feed (connect with a WebSocket client):
-    # ws://127.0.0.1:8080/live
-    # Send: {"subscribe": ["temp_1"]} to filter readings
+    # View dashboard:
+    # Open http://127.0.0.1:8080/ in your browser
 """
 from __future__ import annotations
 
@@ -37,6 +35,7 @@ from .tcp_ingest import start_tcp_server
 from .rest_api import build_app
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 async def main() -> None:
@@ -61,18 +60,27 @@ async def main() -> None:
     site = web.TCPSite(runner, '127.0.0.1', 8080)
     await site.start()
 
-    logging.info("Telemetry server started: TCP on 127.0.0.1:9000, HTTP on 127.0.0.1:8080")
+    logger.info("=" * 60)
+    logger.info("Telemetry server started successfully!")
+    logger.info("=" * 60)
+    logger.info("TCP ingest server:  tcp://127.0.0.1:9000")
+    logger.info("REST API:           http://127.0.0.1:8080")
+    logger.info("Dashboard:          http://127.0.0.1:8080/")
+    logger.info("Sensors endpoint:   http://127.0.0.1:8080/sensors")
+    logger.info("=" * 60)
 
     try:
         # Run forever
-        await asyncio.Future()  # Wait indefinitely
+        await asyncio.Future()
     except KeyboardInterrupt:
-        logging.info("Shutting down...")
+        logger.info("Shutting down...")
     finally:
         await runner.cleanup()
         tcp_server.close()
         await tcp_server.wait_closed()
+        logger.info("Server shut down complete")
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+

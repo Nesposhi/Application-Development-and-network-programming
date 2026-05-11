@@ -17,9 +17,19 @@ syntax = "proto3";
 package telemetry;
 
 message Reading {
-  // TODO: declare fields with sensible numbering
+  string sensor_id = 1;       // Unique sensor identifier
+  string sensor_type = 2;     // Type of sensor (temperature, humidity, soil_moisture, light, etc.)
+  double value = 3;           // Numeric reading value
+  int64 timestamp = 4;        // Unix epoch milliseconds
 }
 
 message SensorRegistration {
-  // TODO: declare fields
+  string sensor_id = 1;       // Unique sensor identifier
+  string sensor_type = 2;     // Type of sensor
+  int32 interval_seconds = 3; // Reporting interval in seconds
+}
+
+message SubscriptionMessage {
+  string action = 1;          // "subscribe" or "unsubscribe"
+  repeated string sensor_ids = 2;  // List of sensor IDs to (un)subscribe from
 }

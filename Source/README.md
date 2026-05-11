@@ -54,7 +54,8 @@ Sessions are tracked via cookies — set on first response, returned by the clie
 
 ## WebSocket
 
-Connect to `ws://<host>:<port>/live`. Send a JSON subscription message after the upgrade to filter on specific sensor IDs. Frames on this channel are JSON.
+Connect to `ws:/http://127.0.0.1:8080/
+`. Send a JSON subscription message after the upgrade to filter on specific sensor IDs. Frames on this channel are JSON.
 
 ## Authors
 
